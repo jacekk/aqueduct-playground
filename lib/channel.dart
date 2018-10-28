@@ -1,3 +1,5 @@
+import 'dart:core';
+import 'dart:math';
 import 'aqueduct_playground.dart';
 
 /// This type initializes an application.
@@ -13,7 +15,8 @@ class AqueductPlaygroundChannel extends ApplicationChannel {
   /// This method is invoked prior to [entryPoint] being accessed.
   @override
   Future prepare() async {
-    logger.onRecord.listen((rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+    logger.onRecord.listen(
+        (rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
   }
 
   /// Construct the request channel.
@@ -28,11 +31,18 @@ class AqueductPlaygroundChannel extends ApplicationChannel {
 
     // Prefer to use `link` instead of `linkFunction`.
     // See: https://aqueduct.io/docs/http/request_controller/
-    router
-      .route("/example")
-      .linkFunction((request) async {
-        return Response.ok({"key": "value"});
+    router.route("/example").linkFunction((request) async {
+      final rand = Random();
+      final max = 1e4.toInt();
+
+      return Response.ok({
+        "randomNumber": rand.nextInt(max),
+        "maxNumber": max,
+        "now": DateTime.now().toString(),
+        "nowUtc": DateTime.now().toUtc().toString(),
+        "nowIso": DateTime.now().toIso8601String(),
       });
+    });
 
     return router;
   }
